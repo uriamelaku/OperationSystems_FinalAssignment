@@ -305,12 +305,14 @@ int main()
     while (true) {
         if ((newSocket = accept(serverFd, (struct sockaddr *)&address, (socklen_t *)&addrlen)) < 0) {
             std::cerr << "Accept failed: " << strerror(errno) << std::endl;
+            continue; // Continue to the next iteration if accept fails
         }
 
         std::cout << "Client connected! Starting the pipeline..." << std::endl;
-        handleClientPipeline(newSocket);
-        // std::thread clientThread(handleClientPipeline, newSocket);
-        // clientThread.detach();
+
+        // Create a new thread to handle the client
+        std::thread clientThread(handleClientPipeline, newSocket);
+        clientThread.detach(); // Detach the thread to allow it to run independently 
     }
 
     close(serverFd);
